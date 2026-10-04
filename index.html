@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Rent & Reuse</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        header {
+            background: #2563eb;
+            color: white;
+            padding: 18px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 25px;
+        }
+
+        nav button {
+            border: none;
+            background: transparent;
+            color: white;
+            margin-left: 18px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        nav button:hover {
+            text-decoration: underline;
+        }
+
+        .hero {
+            padding: 70px 6%;
+            text-align: center;
+            background: white;
+        }
+
+        .hero h2 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            color: #1e3a8a;
+        }
+
+        .hero p {
+            color: #555;
+            font-size: 18px;
+            margin-bottom: 25px;
+        }
+
+        .main-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 13px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .main-btn:hover {
+            background: #1d4ed8;
+        }
+
+        section {
+            padding: 45px 6%;
+        }
+
+        section h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #1e3a8a;
+        }
+
+        .items-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 22px;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .item-card h3 {
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+
+        .item-card p {
+            margin: 7px 0;
+            color: #555;
+        }
+
+        .item-card button {
+            margin-top: 12px;
+            margin-right: 7px;
+            padding: 9px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            background: #2563eb;
+        }
+
+        .item-card button.borrow {
+            background: #16a34a;
+        }
+
+        .form-container {
+            max-width: 550px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cancel-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .success {
+            display: none;
+            background: #dcfce7;
+            color: #166534;
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 15px;
+        }
+
+        footer {
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            nav button {
+                margin: 0 5px;
+            }
+
+            .hero h2 {
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Rent & Reuse</h1>
+
+    <nav>
+        <button onclick="showHome()">Home</button>
+        <button onclick="showBrowse()">Browse</button>
+        <button onclick="showPostForm()">Post Item</button>
+    </nav>
+</header>
+
+
+<!-- HOME -->
+<div id="homeSection">
+
+    <div class="hero">
+        <h2>Rent. Borrow. Reuse.</h2>
+
+        <p>
+            Share things you no longer use and find things you need.
+        </p>
+
+        <button class="main-btn" onclick="showPostForm()">
+            Post an Item
+        </button>
+    </div>
+
+    <section>
+        <h2>Available Items</h2>
+
+        <div id="homeItems" class="items-container"></div>
+    </section>
+
+</div>
+
+
+<!-- BROWSE -->
+<section id="browseSection" class="hidden">
+
+    <h2>Browse Available Items</h2>
+
+    <div id="browseItems" class="items-container"></div>
+
+</section>
+
+
+<!-- POST ITEM -->
+<section id="postSection" class="hidden">
+
+    <h2>Post Your Item</h2>
+
+    <div class="form-container">
+
+        <div id="successMessage" class="success">
+            Item posted successfully!
+        </div>
+
+        <form id="postItemForm">
+
+            <div class="form-group">
+                <label for="itemName">Item Name</label>
+
+                <input
+                    type="text"
+                    id="itemName"
+                    placeholder="Example: Bicycle"
+                    required
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label for="category">Category</label>
+
+                <select id="category" required>
+
+                    <option value="">
+                        Select Category
+                    </option>
+
+                    <option value="Electronics">
+                        Electronics
+                    </option>
+
+                    <option value="Furniture">
+                        Furniture
+                    </option>
+
+                    <option value="Books">
+                        Books
+                    </option>
+
+                    <option value="Sports">
+                        Sports
+                    </option>
+
+                    <option value="Clothing">
+                        Clothing
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <textarea
+                    id="description"
+                    placeholder="Describe your item"
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="price">
+                    Rent Price per Day
+                </label>
+
+                <input
+                    type="number"
+                    id="price"
+                    placeholder="Example: 100"
+                    min="0"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="location">
+                    Location
+                </label>
+
+                <input
+                    type="text"
+                    id="location"
+                    placeholder="Example: Hyderabad"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-buttons">
+
+                <button
+                    type="submit"
+                    class="main-btn"
+                >
+                    Post Item
+                </button>
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="showHome()"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<footer>
+    <p>© 2026 Rent & Reuse | Share More, Waste Less</p>
+</footer>
+
+
+<script>
+
+    /*
+       DEFAULT ITEMS
+    */
+
+    let items = JSON.parse(
+        localStorage.getItem("rentReuseItems")
+    ) || [
+
+        {
+            id: 1,
+            name: "Bicycle",
+            category: "Sports",
+            description: "Good condition bicycle available for rent.",
+            price: 150,
+            location: "Hyderabad"
+        },
+
+        {
+            id: 2,
+            name: "Study Table",
+            category: "Furniture",
+            description: "Clean study table available for borrowing.",
+            price: 50,
+            location: "Hyderabad"
+        },
+
+        {
+            id: 3,
+            name: "Laptop",
+            category: "Electronics",
+            description: "Laptop available for temporary use.",
+            price: 500,
+            location: "Hyderabad"
+        }
+
+    ];
+
+
+    /*
+       SAVE ITEMS
+    */
+
+    function saveItems() {
+
+        localStorage.setItem(
+            "rentReuseItems",
+            JSON.stringify(items)
+        );
+
+    }
+
+
+    /*
+       SHOW HOME
+    */
+
+    function showHome() {
+
+        document
+            .getElementById("homeSection")
+            .classList.remove("hidden");
+
+        document
+            .getElementById("browseSection")
+            .classList.add("hidden");
+
+        document
+            .getElementById("postSection")
+            .classList.add("hidden");
+
+        displayHomeItems();
+
+    }
+
+
+    /*
+       SHOW BROWSE
+    */
+
+    function showBrowse() {
+
+        document
+            .getElementById("homeSection")
+            .classList.add("hidden");
+
+        document
+            .getElementById("browseSection")
+            .classList.remove("hidden");
+
+        document
+            .getElementById("postSection")
+            .classList.add("hidden");
+
+        displayBrowseItems();
+
+    }
+
+
+    /*
+       SHOW POST FORM
+    */
+
+    function showPostForm() {
+
+        document
+            .getElementById("homeSection")
+            .classList.add("hidden");
+
+        document
+            .getElementById("browseSection")
+            .classList.add("hidden");
+
+        document
+            .getElementById("postSection")
+            .classList.remove("hidden");
+
+        document
+            .getElementById("successMessage")
+            .style.display = "none";
+
+        window.scrollTo(0, 0);
+
+    }
+
+
+    /*
+       DISPLAY HOME ITEMS
+    */
+
+    function displayHomeItems() {
+
+        const container =
+            document.getElementById("homeItems");
+
+        container.innerHTML = "";
+
+        items.forEach(function(item) {
+
+            container.innerHTML += createItemCard(item);
+
+        });
+
+    }
+
+
+    /*
+       DISPLAY BROWSE ITEMS
+    */
+
+    function displayBrowseItems() {
+
+        const container =
+            document.getElementById("browseItems");
+
+        container.innerHTML = "";
+
+        if (items.length === 0) {
+
+            container.innerHTML =
+                "<p>No items available.</p>";
+
+            return;
+
+        }
+
+        items.forEach(function(item) {
+
+            container.innerHTML += createItemCard(item);
+
+        });
+
+    }
+
+
+    /*
+       CREATE ITEM CARD
+    */
+
+    function createItemCard(item) {
+
+        return `
+
+            <div class="item-card">
+
+                <h3>${escapeHTML(item.name)}</h3>
+
+                <p>
+                    <strong>Category:</strong>
+                    ${escapeHTML(item.category)}
+                </p>
+
+                <p>
+                    ${escapeHTML(item.description)}
+                </p>
+
+                <p>
+                    <strong>Rent:</strong>
+                    ₹${item.price}/day
+                </p>
+
+                <p>
+                    <strong>Location:</strong>
+                    ${escapeHTML(item.location)}
+                </p>
+
+                <button
+                    onclick="requestRent(${item.id})"
+                >
+                    Request to Rent
+                </button>
+
+                <button
+                    class="borrow"
+                    onclick="requestBorrow(${item.id})"
+                >
+                    Request to Borrow
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    /*
+       POST ITEM
+       THIS IS THE IMPORTANT PART
+    */
+
+    document
+        .getElementById("postItemForm")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            const name =
+                document.getElementById("itemName").value.trim();
+
+            const category =
+                document.getElementById("category").value;
+
+            const description =
+                document.getElementById("description").value.trim();
+
+            const price =
+                document.getElementById("price").value;
+
+            const location =
+                document.getElementById("location").value.trim();
+
+
+            if (
+                name === "" ||
+                category === "" ||
+                description === "" ||
+                price === "" ||
+                location === ""
+            ) {
+
+                alert("Please fill all the fields.");
+
+                return;
+
+            }
+
+
+            const newItem = {
+
+                id: Date.now(),
+
+                name: name,
+
+                category: category,
+
+                description: description,
+
+                price: Number(price),
+
+                location: location
+
+            };
+
+
+            items.push(newItem);
+
+
+            saveItems();
+
+
+            document
+                .getElementById("successMessage")
+                .style.display = "block";
+
+
+            document
+                .getElementById("postItemForm")
+                .reset();
+
+
+            displayHomeItems();
+
+
+            setTimeout(function() {
+
+                showBrowse();
+
+            }, 1000);
+
+        });
+
+
+    /*
+       RENT REQUEST
+    */
+
+    function requestRent(id) {
+
+        const item =
+            items.find(function(item) {
+
+                return item.id === id;
+
+            });
+
+
+        if (!item) {
+
+            alert("Item not found.");
+
+            return;
+
+        }
+
+
+        alert(
+            "Rent request sent for: " +
+            item.name
+        );
+
+    }
+
+
+    /*
+       BORROW REQUEST
+    */
+
+    function requestBorrow(id) {
+
+        const item =
+            items.find(function(item) {
+
+                return item.id === id;
+
+            });
+
+
+        if (!item) {
+
+            alert("Item not found.");
+
+            return;
+
+        }
+
+
+        alert(
+            "Borrow request sent for: " +
+            item.name
+        );
+
+    }
+
+
+    /*
+       SECURITY FUNCTION
+    */
+
+    function escapeHTML(text) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent = text;
+
+        return div.innerHTML;
+
+    }
+
+
+    /*
+       LOAD ITEMS WHEN PAGE OPENS
+    */
+
+    displayHomeItems();
+
+</script>
+
+</body>
+</html>
